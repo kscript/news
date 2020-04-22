@@ -5,6 +5,24 @@
   .title {
     font-size: 36px;
   }
+  .info {
+    font-size: 32px;
+    color: #666;
+    .name {
+      color: #0f65a9;
+    }
+    .logo {
+      position: relative;
+      top: -1px;
+      vertical-align: middle;
+      margin: 0 2px;
+      width: 32px;
+      height: 32px;
+    }
+    icon {
+      margin: 0 2px;
+    }
+  }
   .content {
     font-size: 32px;
   }

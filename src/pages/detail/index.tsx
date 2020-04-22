@@ -56,6 +56,10 @@ class Detail extends Component {
         return '<ol style="margin: 0;padding: 0;">' + (data || []).map(item => `<li style="margin: 0;list-style: disc;">${item.desc}</li>`) + '</ol>';
       case 'IMG': 
         return `<img src="${data.origUrl}" alt="${data.desc}" style="max-width: 100%;">`
+      case 'H2': 
+      case '/H2': 
+        return ' '
+        break;
       case 'VIDEO': 
         return ' ' // `<video src="${data.playurl}" poster="${data.img}" style="max-width: 100%;">`
       default:
@@ -64,14 +68,14 @@ class Detail extends Component {
   }
   formatContent(content = '', detail: anyObject = {}) {
     const tag = {
-      p: '<P style="padding: 10px;">'
+      p: '<P style="padding: 6px 0;">'
     }
-    return content.replace(/!--H2--/g, '').replace(/<(.*?)>/g, (s, $1) => {
-      return tag[$1.toLowerCase()] || `<${$1}>`
-    }).replace(/<\!--(.*?)-->/g, (s, $1) => {
+    return content.replace(/!--(\/|)H2--/g, '').replace(/<\!--(.*?)-->/g, (s, $1) => {
       const type = $1.split('_')[0]
       const data = (detail.attribute || {})[$1] || {}
       return data ? this.formatTag(type, data) || $1 : $1
+    }).replace(/<(.*?)>/g, (s, $1) => {
+      return $1 ? tag[$1.toLowerCase()] || `<${$1}>` : ''
     })
   }
   async loadDetail(id) {
@@ -94,6 +98,12 @@ class Detail extends Component {
         this.state.ready ? 
         <View className="article">
           <View className="title">{this.state.detail.title}</View>
+          <View className="info">
+            来源: 
+            {this.state.detail.card.icon ? <Image className="logo" src={this.state.detail.card.icon}></Image> : ''}
+            <Text className="name">{this.state.detail.card.vip_desc || this.state.detail.card.chlname}</Text>
+            {this.state.detail.card.vip_type ? <Icon size='12' type='success' /> : ''}
+          </View>
           <RichText className="content" nodes={this.state.detail.content.richText}></RichText>
         </View>
         : ''

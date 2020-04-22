@@ -79,9 +79,9 @@ class Index extends Component {
   componentDidShow () { }
 
   componentDidHide () { }
-  gotoDetail(id) {  
+  gotoDetail(id, type = 0) {  
     Taro.navigateTo({
-      url: `/pages/detail/index?id=${id}`
+      url: `/pages/detail/index?id=${id}&type=${type}`
     })
   }
   async onScrollToLower() {
@@ -111,48 +111,42 @@ class Index extends Component {
   render () {
     return (
       <View className='index'>
-        {
-          this.state.page ?
-          <View>
-            <ScrollView 
-              scrollY
-              scrollWithAnimation
-              className="news-list"
-              onScrollToLower={this.onScrollToLower}
-              >
-            <Swiper
-              className='top-swiper'
-              indicatorColor='#999'
-              indicatorActiveColor='#333'
-              circular
-              autoplay>
-              {this.state.focus.map(item => 
-                <SwiperItem key={item.id} onClick={this.gotoDetail.bind(this, item.id)}>
-                  <Image className="thumb" src={item.thumbnails[0]}></Image>
-                  <View className="title ellipsis">{item.title}</View>
-                </SwiperItem>
-              )
-            }
-            </Swiper>
-              {
-                this.state.news.map(item => 
-                  <View className="news-item" key={item.id} onClick={this.gotoDetail.bind(this, item.id)}>
-                    <View className="title ellipsis">{item.title}</View>
-                    <View className="desc">{item.abstract}</View>
-                    <View className={"thumb-list" + (item.thumbnails.length > 1 ? " is-multi" : "")}>
-                      {
-                        item.thumbnails.slice(0, 3).map(thumb => 
-                          <Image key={thumb} className="thumb" src={thumb}></Image>
-                        )
-                      }
-                    </View>
-                  </View>
-                )
-              }
-            </ScrollView>
-          </View>
-          : ''
-        }
+        <ScrollView 
+          scrollY
+          scrollWithAnimation
+          className="news-list"
+          onScrollToLower={this.onScrollToLower}
+          >
+          <Swiper
+            className='top-swiper'
+            indicatorColor='#999'
+            indicatorActiveColor='#333'
+            circular
+            autoplay>
+            {this.state.focus.map(item => 
+              <SwiperItem key={item.id} onClick={this.gotoDetail.bind(this, item.id, item.articletype)}>
+                <Image className="thumb" src={item.thumbnails[0]}></Image>
+                <View className="title ellipsis">{item.title}</View>
+              </SwiperItem>
+            )
+          }
+          </Swiper>
+          {
+            this.state.news.map(item => 
+              <View className="news-item" key={item.id} onClick={this.gotoDetail.bind(this, item.id, item.articletype)}>
+                <View className="title ellipsis">{item.title}</View>
+                <View className="desc">{item.abstract}</View>
+                <View className={"thumb-list" + (item.thumbnails.length > 1 ? " is-multi" : "")}>
+                  {
+                    item.thumbnails.slice(0, 3).map(thumb => 
+                      <Image key={thumb} className="thumb" src={thumb}></Image>
+                    )
+                  }
+                </View>
+              </View>
+            )
+          }
+        </ScrollView>
         {
           this.state.complete ? <View className="complete-tip text-center">没有了</View> : ''
         }
