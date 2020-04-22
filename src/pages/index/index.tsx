@@ -1,9 +1,9 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Button, Text } from '@tarojs/components'
+import { View, Image, Swiper, SwiperItem } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
-import { add, minus, asyncAdd } from '../../actions/counter'
+import { newsList } from '../../actions/http'
 
 import './index.scss'
 
@@ -16,17 +16,17 @@ import './index.scss'
 // ref: https://github.com/DefinitelyTyped/DefinitelyTyped/issues/20796
 //
 // #endregion
-
+interface anyObject<T = any> {
+  [prop: string] : T
+}
 type PageStateProps = {
-  counter: {
-    num: number
+  http: {
+    newsList: anyObject
   }
 }
 
 type PageDispatchProps = {
-  add: () => void
-  dec: () => void
-  asyncAdd: () => any
+  newsList: () => any
 }
 
 type PageOwnProps = {}
@@ -39,21 +39,17 @@ interface Index {
   props: IProps;
 }
 
-@connect(({ counter }) => ({
-  counter
+@connect(({ http }) => ({
+  http
 }), (dispatch) => ({
-  add () {
-    dispatch(add())
-  },
-  dec () {
-    dispatch(minus())
-  },
-  asyncAdd () {
-    dispatch(asyncAdd())
+  newsList () {
+    return dispatch(newsList())
   }
 }))
 class Index extends Component {
-
+  state: anyObject<any> = {
+    news: {}
+  }
     /**
    * 指定config的类型声明为: Taro.Config
    *
@@ -66,10 +62,18 @@ class Index extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    console.log(this.props, nextProps)
+    console.log(nextProps)
   }
 
   componentWillUnmount () { }
+  componentWillMount () {
+  }
+  async componentDidMount () {
+    const news = await this.props.newsList()
+    this.setState({
+      news
+    })
+  }
 
   componentDidShow () { }
 
@@ -78,11 +82,20 @@ class Index extends Component {
   render () {
     return (
       <View className='index'>
-        <Button className='add_btn' onClick={this.props.add}>+</Button>
-        <Button className='dec_btn' onClick={this.props.dec}>-</Button>
-        <Button className='dec_btn' onClick={this.props.asyncAdd}>async</Button>
-        <View><Text>{this.props.counter.num}</Text></View>
-        <View><Text>Hello, World</Text></View>
+        {this.state.news.hasOwnProperty('newslist') && <Swiper
+          className='test-h'
+          indicatorColor='#999'
+          indicatorActiveColor='#333'
+          circular
+          autoplay>
+          {this.props.http.newsList.focus_news.map(item => 
+            <SwiperItem key={item.id}>
+              <Image className="thumb" src={item.thumbnails[0]}></Image>
+              <View className="title">{item.title}</View>
+            </SwiperItem>
+          )
+        }
+        </Swiper>}
       </View>
     )
   }
