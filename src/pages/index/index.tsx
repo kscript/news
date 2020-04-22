@@ -48,6 +48,7 @@ interface Index {
 }))
 class Index extends Component {
   state: anyObject = {
+    complete: false,
     page: 0,
     focus: [],
     news: []
@@ -78,20 +79,31 @@ class Index extends Component {
   componentDidShow () { }
 
   componentDidHide () { }
+  gotoDetail(id) {  
+    Taro.navigateTo({
+      url: `/pages/detail/index?id=${id}`
+    })
+  }
   async onScrollToLower() {
     console.log('onScrollToLower')
     await this.loadNews()
   }
   async loadNews() {
+    if (this.state.complete) return
     const res = await this.props.newsList(this.state.page)
     this.setState((state: anyObject) => {
       const focus = state.focus.length ? state.focus : res.focus_news
       const page = res.page
       const news = state.news.concat(res.newslist)
+      let complete = state.complete
+      if (page !== 0 && !res.page) {
+        complete = true
+      }
       return {
-        page,
+        page: page || state.page,
         focus,
-        news
+        news,
+        complete
       }
     })
   }
@@ -115,7 +127,7 @@ class Index extends Component {
               circular
               autoplay>
               {this.state.focus.map(item => 
-                <SwiperItem key={item.id}>
+                <SwiperItem key={item.id} onClick={this.gotoDetail.bind(this, item.id)}>
                   <Image className="thumb" src={item.thumbnails[0]}></Image>
                   <View className="title ellipsis">{item.title}</View>
                 </SwiperItem>
@@ -124,7 +136,7 @@ class Index extends Component {
             </Swiper>
               {
                 this.state.news.map(item => 
-                  <View className="news-item" key={item.id}>
+                  <View className="news-item" key={item.id} onClick={this.gotoDetail.bind(this, item.id)}>
                     <View className="title ellipsis">{item.title}</View>
                     <View className="desc">{item.abstract}</View>
                     <View className={"thumb-list" + (item.thumbnails.length > 1 ? " is-multi" : "")}>
@@ -140,6 +152,9 @@ class Index extends Component {
             </ScrollView>
           </View>
           : ''
+        }
+        {
+          this.state.complete ? <View className="complete-tip text-center">没有了</View> : ''
         }
       </View>
     )

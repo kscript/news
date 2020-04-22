@@ -1,6 +1,6 @@
 
 import Taro from '@tarojs/taro'
-import { NewsList } from '../constants/http'
+import { NewsList, NewsDetail } from '../constants/http'
 const normalizing = (type = '', payload = {}, option = {}) => {
   return Object.assign({
     type,
@@ -17,6 +17,18 @@ export const newsList = (page) =>{
       }
     })
     dispatch(normalizing(NewsList, data))
+    return data
+  }
+}
+export const newsDetail = (id) =>{
+  return async dispatch => {
+    let { data } = await Taro.request({
+      url: 'https://kuaibao.qq.com/getSubNewsContent',
+      data: {
+        id
+      }
+    })
+    dispatch(normalizing(NewsDetail, data))
     return data
   }
 }

@@ -6,6 +6,9 @@
   /*! autoprefixer: ignore next */
   -webkit-box-orient: vertical;
 }
+.text-center {
+  text-align: center;
+}
 .index {
   flex-direction: column;
   width: 100%;
@@ -77,5 +80,8 @@
         }
       }
     }
+  }
+  .complete-tip {
+    padding: 20px;
   }
 }
