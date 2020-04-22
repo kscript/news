@@ -39,20 +39,19 @@ interface User {
 }))
 class User extends Component {
   state: anyObject = {
-    ready: false,
-    nodes: [],
-    detail: {}
+    user: {}
   }
   config: Config = {
-    navigationBarTitleText: '新闻详情'
+    navigationBarTitleText: '个人中心'
   }
   async componentDidMount () {
     console.log(this)
   }
   render () {
     return (
-      <View className='detail'>
-      
+      <View className='user'>
+        <View className="profile">
+        </View>
       </View>
     )
   }

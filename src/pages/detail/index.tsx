@@ -50,6 +50,18 @@ class Detail extends Component {
     console.log(this)
     await this.loadDetail(this.$router.params.id)
   }
+  formatTag(type, data) {
+    switch (type) {
+      case 'LIST':
+        return '<ol style="margin: 0;padding: 0;">' + (data || []).map(item => `<li style="margin: 0;list-style: disc;">${item.desc}</li>`) + '</ol>';
+      case 'IMG': 
+        return `<img src="${data.origUrl}" alt="${data.desc}" style="max-width: 100%;">`
+      case 'VIDEO': 
+        return ' ' // `<video src="${data.playurl}" poster="${data.img}" style="max-width: 100%;">`
+      default:
+        return type
+    }
+  }
   formatContent(content = '', detail: anyObject = {}) {
     const tag = {
       p: '<P style="padding: 10px;">'
@@ -59,11 +71,7 @@ class Detail extends Component {
     }).replace(/<\!--(.*?)-->/g, (s, $1) => {
       const type = $1.split('_')[0]
       const data = (detail.attribute || {})[$1] || {}
-      return data ? {
-        LIST: '<ol style="margin: 0;padding: 0;">' + data.map(item => `<li style="margin: 0;list-style: disc;">${item.desc}</li>`) + '</ol>',
-        VIDEO: `<video src="${data.playurl}" poster="${data.img}" style="max-width: 100%;">`,
-        IMG: `<img src="${data.origUrl}" alt="${data.desc}" style="max-width: 100%;">`
-      }[type] || $1 : $1
+      return data ? this.formatTag(type, data) || $1 : $1
     })
   }
   async loadDetail(id) {
