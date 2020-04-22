@@ -8,10 +8,13 @@ const normalizing = (type = '', payload = {}, option = {}) => {
     payload
   }, option)
 }
-export const newsList = () =>{
+export const newsList = (page) =>{
   return async dispatch => {
     let { data } = await Taro.request({
       url: 'https://kuaibao.qq.com/n/getKbMainpageInfo',
+      data: {
+        page
+      }
     })
     dispatch(normalizing(NewsList, data))
     return data

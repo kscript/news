@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Image, Swiper, SwiperItem } from '@tarojs/components'
+import { View, Text, Image, Swiper, SwiperItem, ScrollView } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { newsList } from '../../actions/http'
@@ -26,7 +26,7 @@ type PageStateProps = {
 }
 
 type PageDispatchProps = {
-  newsList: () => any
+  newsList: (page: number) => any
 }
 
 type PageOwnProps = {}
@@ -42,13 +42,15 @@ interface Index {
 @connect(({ http }) => ({
   http
 }), (dispatch) => ({
-  newsList () {
-    return dispatch(newsList())
+  newsList (page) {
+    return dispatch(newsList(page))
   }
 }))
 class Index extends Component {
-  state: anyObject<any> = {
-    news: {}
+  state: anyObject = {
+    page: 0,
+    focus: [],
+    news: []
   }
     /**
    * 指定config的类型声明为: Taro.Config
@@ -69,33 +71,76 @@ class Index extends Component {
   componentWillMount () {
   }
   async componentDidMount () {
-    const news = await this.props.newsList()
-    this.setState({
-      news
-    })
+    console.log(this)
+    await this.loadNews()
   }
 
   componentDidShow () { }
 
   componentDidHide () { }
+  async onScrollToLower() {
+    console.log('onScrollToLower')
+    await this.loadNews()
+  }
+  async loadNews() {
+    const res = await this.props.newsList(this.state.page)
+    this.setState((state: anyObject) => {
+      const focus = state.focus.length ? state.focus : res.focus_news
+      const page = res.page
+      const news = state.news.concat(res.newslist)
+      return {
+        page,
+        focus,
+        news
+      }
+    })
+  }
 
   render () {
     return (
       <View className='index'>
-        {this.state.news.hasOwnProperty('newslist') && <Swiper
-          className='test-h'
-          indicatorColor='#999'
-          indicatorActiveColor='#333'
-          circular
-          autoplay>
-          {this.props.http.newsList.focus_news.map(item => 
-            <SwiperItem key={item.id}>
-              <Image className="thumb" src={item.thumbnails[0]}></Image>
-              <View className="title">{item.title}</View>
-            </SwiperItem>
-          )
+        {
+          this.state.page ?
+          <View>
+            <ScrollView 
+              scrollY
+              scrollWithAnimation
+              className="news-list"
+              onScrollToLower={this.onScrollToLower}
+              >
+            <Swiper
+              className='top-swiper'
+              indicatorColor='#999'
+              indicatorActiveColor='#333'
+              circular
+              autoplay>
+              {this.state.focus.map(item => 
+                <SwiperItem key={item.id}>
+                  <Image className="thumb" src={item.thumbnails[0]}></Image>
+                  <View className="title ellipsis">{item.title}</View>
+                </SwiperItem>
+              )
+            }
+            </Swiper>
+              {
+                this.state.news.map(item => 
+                  <View className="news-item" key={item.id}>
+                    <View className="title ellipsis">{item.title}</View>
+                    <View className="desc">{item.abstract}</View>
+                    <View className={"thumb-list" + (item.thumbnails.length > 1 ? " is-multi" : "")}>
+                      {
+                        item.thumbnails.slice(0, 3).map(thumb => 
+                          <Image key={thumb} className="thumb" src={thumb}></Image>
+                        )
+                      }
+                    </View>
+                  </View>
+                )
+              }
+            </ScrollView>
+          </View>
+          : ''
         }
-        </Swiper>}
       </View>
     )
   }
