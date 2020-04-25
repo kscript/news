@@ -112,9 +112,9 @@ class Index extends Component {
     return (
       <View className='index'>
         <ScrollView 
+          className="scroll-view"
           scrollY
           scrollWithAnimation
-          className="news-list"
           onScrollToLower={this.onScrollToLower}
           >
           <Swiper
@@ -131,21 +131,24 @@ class Index extends Component {
             )
           }
           </Swiper>
-          {
-            this.state.news.map(item => 
-              <View className="news-item" key={item.id} onClick={this.gotoDetail.bind(this, item.id, item.articletype)}>
-                <View className="title ellipsis">{item.title}</View>
-                <View className="desc">{item.abstract}</View>
-                <View className={"thumb-list" + (item.thumbnails.length > 1 ? " is-multi" : "")}>
-                  {
-                    item.thumbnails.slice(0, 3).map(thumb => 
-                      <Image key={thumb} className="thumb" src={thumb}></Image>
-                    )
-                  }
+          <View 
+            className="news-list">
+            {
+              this.state.news.map(item => 
+                <View className="news-item" key={item.id} onClick={this.gotoDetail.bind(this, item.id, item.articletype)}>
+                  <View className="title ellipsis">{item.title}</View>
+                  <View className="desc">{item.abstract}</View>
+                  <View className={"thumb-list" + (item.thumbnails.length > 1 ? " is-multi" : "")}>
+                    {
+                      item.thumbnails.slice(0, 3).map(thumb => 
+                        <Image key={thumb} className="thumb" src={thumb}></Image>
+                      )
+                    }
+                  </View>
                 </View>
-              </View>
-            )
-          }
+              )
+            }
+          </View>
         </ScrollView>
         {
           this.state.complete ? <View className="complete-tip text-center">没有了</View> : ''

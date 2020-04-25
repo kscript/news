@@ -6,7 +6,8 @@
     font-size: 36px;
   }
   .info {
-    font-size: 32px;
+    padding: 4px 0;
+    font-size: 26px;
     color: #666;
     .name {
       color: #0f65a9;
@@ -16,8 +17,8 @@
       top: -1px;
       vertical-align: middle;
       margin: 0 2px;
-      width: 32px;
-      height: 32px;
+      width: 28px;
+      height: 28px;
     }
     icon {
       margin: 0 2px;
@@ -25,5 +26,49 @@
   }
   .content {
     font-size: 32px;
+  }
+  video{
+    width: 100%;
+  }
+  .comments {
+    margin-top: 40px;
+    border-top: 1px solid #eee;
+    padding-top: 40px;
+    padding-bottom: 20px;
+    .nick-name {
+      color: #f40;
+      border: 0;
+      padding: 0;
+      float: right;
+      font-size: 28px;
+      line-height: 30px;
+      margin-right: 10px;
+      &.is-login{
+        color: #333;
+        padding-top: 4px;
+        open-data {
+          color: #f40;
+        }
+      }
+    }
+    textarea {
+      margin: 16px 0;
+      width: 100%;
+      padding: 12px 12px;
+      box-sizing: border-box;
+      border: 1px solid #f2f2f2;
+    }
+    .ft {
+      padding: 20px 0;
+    }
+    .comment-item {
+      padding: 10px 0;
+      .info {
+        font-size: 28px;
+      }
+      .text {
+        font-size: 28px;
+      }
+    }
   }
 }

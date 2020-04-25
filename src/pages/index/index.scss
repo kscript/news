@@ -27,6 +27,10 @@
     text-overflow:ellipsis;
     white-space: nowrap;
   }
+  .scroll-view {
+    height: 100vh;
+    background: #fefefe;
+  }
   .top-swiper {
     height: 420px;
     margin-bottom: 20px;
@@ -47,14 +51,12 @@
       height: 64px;
       padding: 0px 20px;
       line-height: 64px;
-      font-size: 32px;
+      font-size: 30px;
       color: #fff;
       background: rgba(255, 255,255, .2);
     }
   }
   .news-list {
-    height: 100vh;
-    background: #fefefe;
     box-sizing: border-box;
     .news-item {
       padding: 10px 20px;
@@ -64,8 +66,8 @@
     }
     .desc {
       width: 100%;
-      font-size: 32px;
-      color: #555;
+      font-size: 30px;
+      color: #666;
       @include multi(3);
     }
     .thumb-list {
