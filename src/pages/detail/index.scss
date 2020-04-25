@@ -24,6 +24,9 @@
       margin: 0 2px;
     }
   }
+  image{
+    width: 100%;
+  }
   .content {
     font-size: 32px;
   }
@@ -45,7 +48,7 @@
       margin-right: 10px;
       &.is-login{
         color: #333;
-        padding-top: 8px;
+        padding-top: 12px;
         open-data {
           color: #f40;
         }

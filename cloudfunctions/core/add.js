@@ -1,8 +1,4 @@
-const cloud = require('wx-server-sdk')
 const margeData = require('./utils').mergeData
-
-cloud.init()
-const db = cloud.database()
 const createTime = () => {
   const t = new Date(Date.now() + 8 * 60 * 60 * 1000)
   return [
@@ -26,10 +22,9 @@ const provide = (data = {}) => {
     type: 1
   }, data)
 }
-exports.main = async (option) => {
+exports.main = async (option, { cloud, db, collection }) => {
   let { name, data, marge, userInfo: { openId } } = option
-  const instance = db.collection(name)
-  return await instance.add({
+  return await collection.add({
     data: Object.assign({}, margeData(marge, provide({
       openId
     })), data)

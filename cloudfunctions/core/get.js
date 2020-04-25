@@ -1,17 +1,13 @@
-const cloud = require('wx-server-sdk')
 const margeData = require('./utils').mergeData
 
-cloud.init()
-const db = cloud.database()
 const provide = (data = {}) => {
   return Object.assign({
   }, data)
 }
-exports.main = async (option) => {
+exports.main = async (option, { cloud, db, collection }) => {
   let { name, data, merge, userInfo } = option
   let handlers = ['where', 'field', 'skip', 'limit', 'orderBy']
-  const instance = db.collection(name)
-  let stack = instance
+  let stack = collection
   handlers.forEach((item, index) => {
     let args = option[item]
     if (args) {

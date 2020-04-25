@@ -72,7 +72,7 @@ class Index extends Component {
   componentWillMount () {
   }
   async componentDidMount () {
-    console.log(this)
+    console.log(this, Taro)
     await this.loadNews()
   }
 

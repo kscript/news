@@ -57,8 +57,8 @@ class Detail extends Component {
   async componentDidMount () {
     console.log(this)
     const id = this.$router.params.id
-    await this.loadDetail(id)
-    await this.loadComments(id)
+    this.loadDetail(id)
+    this.loadComments(id)
   }
   formatTag(type, data) {
     switch (type) {
@@ -94,19 +94,23 @@ class Detail extends Component {
     })
   }
   createNodes(content = '', detail: anyObject = {}) {
-    const contents = content.split(/<p><\!--Video_\d+--><\/P>/)
+    const tags = content.match(/<P><\!--(IMG|VIDEO)_\d+--><\/P>/g) || []
+    const contents = content.split(/(?:<P><\!--(?:IMG|VIDEO)_\d+--><\/P>)/)
     const nodes: any[] = []
+    let imgIndex = 0
+    let videoIndex = 0
     contents.map((item, index) => {
       nodes.push({
-        type: 'string',
+        type: 'HTML',
         key: Math.floor(Math.random() * 1e8).toString(36),
         data: this.formatContent(item, detail)
       })
-      const videoData = (detail.attribute || {})['VIDEO_' + index]
-      videoData && nodes.push({
-        type: 'video',
+      const type = ((tags[index]||'').match(/--(.*?)_/)||{}) [1]|| ''
+      const data = (detail.attribute || {})[type === 'IMG' ? 'IMG_' + imgIndex++ : 'VIDEO_' + videoIndex++]
+      data && nodes.push({
+        type,
         key: Math.floor(Math.random() * 1e8).toString(36),
-        data: videoData
+        data
       })
     })
     return nodes
@@ -145,9 +149,11 @@ class Detail extends Component {
       avator: this.state.avator || ''
     }
     const { result } = await Taro.cloud.callFunction({
-      name: 'add',
+      name: 'core',
       data: {
+        fname: 'add',
         name: 'comments',
+        marge: ['openId', 'type', 'time'],
         data
       }
     }) as anyObject
@@ -164,17 +170,16 @@ class Detail extends Component {
   async loadComments(id, pageno = 1) {
     pageno--
     const { result } = await Taro.cloud.callFunction({
-      name: 'get',
+      name: 'core',
       data: {
+        fname: 'get',
         name: 'comments',
         where: {
           id
         },
-        sort: {
-          time: -1
-        },
+        orderBy: ['time', 'desc'],
         skip: pageno * 10,
-        limit: pageno * 10 + 10 
+        limit: 10
       }
     }) as anyObject
     this.setState((state) => {
@@ -223,8 +228,10 @@ class Detail extends Component {
             </View>
             {
               this.state.nodes.map(item => {
-                if (item.type === 'string') {
+                if (item.type === 'HTML') {
                   return <RichText key={item.key} className="content" nodes={item.data}></RichText>
+                } else if(item.type === 'IMG') {
+                  return <Image src={item.data.origUrl} />
                 }
                 return <Video
                   key={item.key}

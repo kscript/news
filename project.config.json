@@ -6,7 +6,7 @@
 		"es6": true,
 		"enhance": true,
 		"postcss": true,
-		"minified": true,
+		"minified": false,
 		"newFeature": true,
 		"coverView": true,
 		"autoAudits": false,
