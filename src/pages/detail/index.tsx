@@ -29,6 +29,9 @@ type IProps = PageStateProps & PageDispatchProps & PageOwnProps
 interface Detail {
   props: IProps;
 }
+const $data = {
+  comment: ''
+}
 
 @connect(({ http }) => ({
   http
@@ -44,6 +47,7 @@ class Detail extends Component {
     comments: [],
     comment: '',
     nickName: '',
+    avator: '',
     userInfo: {},
     detail: {}
   }
@@ -132,11 +136,13 @@ class Detail extends Component {
     })
   }
   async sendComment() {
-    if (!this.state.nickName || !this.state.comment) return
+    if (!this.state.nickName || !this.state.comment || $data.comment === this.state.comment) return
+    $data.comment = this.state.comment
     const data = {
       id: this.$router.params.id,
       text: this.state.comment,
-      nickName: this.state.nickName
+      nickName: this.state.nickName,
+      avator: this.state.avator || ''
     }
     const { result } = await Taro.cloud.callFunction({
       name: 'add',
@@ -164,6 +170,9 @@ class Detail extends Component {
         where: {
           id
         },
+        sort: {
+          time: -1
+        },
         skip: pageno * 10,
         limit: pageno * 10 + 10 
       }
@@ -183,11 +192,20 @@ class Detail extends Component {
     detail.content.richText = this.formatContent(detail.content.text, detail)
     this.setState((state: anyObject) => {
       const nickName = Taro.getStorageSync('nickName')
+      let userInfo = { nickName: '', avator: '' }
+      let avator = userInfo.avator
+      try {
+        userInfo = JSON.parse(Taro.getStorageSync('userInfo') || '') || {}
+        avator = userInfo.avator
+      } catch(e) {}
       return Object.assign({
         nodes: this.createNodes(detail.content.text, detail),
         ready: true,
-        detail
-      }, nickName ? { nickName } : {})
+        detail,
+      }, 
+      nickName ? { nickName } : {}, 
+      avator ? { avator } : {}, 
+      userInfo.nickName ? { userInfo } : {})
     })
   }
   render () {

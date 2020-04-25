@@ -5,7 +5,7 @@ const db = cloud.database()
 
 exports.main = async (option) => {
   let { name, data } = option
-  let handlers = ['where', 'field', 'skip', 'limit']
+  let handlers = ['where', 'field', 'skip', 'limit', 'sort']
   const instance = db.collection(name)
   let stack = instance
   handlers.forEach((item, index) => {

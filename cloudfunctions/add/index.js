@@ -6,7 +6,7 @@ const defaultOption = {
   type: 1
 }
 const createTime = () => {
-  const t = new Date
+  const t = new Date(Date.now() + 8 * 60 * 60 * 1000)
   return [
     t.getFullYear(), 
     t.getMonth() + 1, 
