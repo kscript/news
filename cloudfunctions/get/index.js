@@ -1,5 +1,5 @@
 const cloud = require('wx-server-sdk')
-const margeData = require('./utils').mergeData
+const mergeData = require('./utils').mergeData
 
 cloud.init()
 const db = cloud.database()
@@ -16,7 +16,7 @@ exports.main = async (option) => {
     let args = option[item]
     if (args) {
       if (item === 'where') {
-        args = Object.assign(margeData(merge, provide(userInfo)), args)
+        args = Object.assign(mergeData(merge, provide(userInfo)), args)
       }
       stack = stack[item].apply(stack, Array.isArray(args) ? args : [args])
     }

@@ -1,6 +1,6 @@
-const mergeData = (marge, sysInfo) => {
+const mergeData = (merge, sysInfo) => {
   const info = {}
-  const keys = Array.isArray(marge) ? marge : typeof marge === 'string' ? marge.split(',') : []
+  const keys = Array.isArray(merge) ? merge : typeof merge === 'string' ? merge.split(',') : []
   const datas = Object.assign({}, sysInfo)
   keys.forEach(key => {
     if (datas.hasOwnProperty(key)) {

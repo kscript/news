@@ -1,4 +1,4 @@
-const margeData = require('./utils').mergeData
+const mergeData = require('./utils').mergeData
 
 const provide = (data = {}) => {
   return Object.assign({
@@ -12,7 +12,7 @@ exports.main = async (option, { cloud, db, collection }) => {
     let args = option[item]
     if (args) {
       if (item === 'where') {
-        args = Object.assign(margeData(merge, provide(userInfo)), args)
+        args = Object.assign(mergeData(merge, provide(userInfo)), args)
       }
       stack = stack[item].apply(stack, Array.isArray(args) ? args : [args])
     }
