@@ -62,9 +62,8 @@ class User extends Component {
     Taro.openSetting({
       success: function (res) {
         console.log(res.authSetting)
-        res.authSetting = {
-          "scope.userInfo": true,
-          "scope.userLocation": true
+        if (!res.authSetting['scope.userInfo']) {
+          this.cancelAuth()
         }
       }
     })
@@ -101,8 +100,7 @@ class User extends Component {
       confirmText: '知道了'
     })
     if (res.confirm) {
-      Taro.removeStorageSync('userInfo')
-      Taro.removeStorageSync('nickName')
+      this.cancelAuth()
       Taro.showToast({
         title: '取消授权成功',
         icon: 'success',
@@ -113,6 +111,15 @@ class User extends Component {
         // })
       })
     }
+  }
+  async cancelAuth() {
+    Taro.removeStorageSync('userInfo')
+    Taro.removeStorageSync('nickName')
+    this.setState((state) => {
+      return {
+        nickName: ''
+      }
+    })
   }
   render () {
     return (
