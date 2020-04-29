@@ -73,6 +73,7 @@
     "stylelint": "9.3.0",
     "stylelint-config-taro-rn": "2.0.2",
     "stylelint-taro-rn": "2.0.2",
+    "taro-ui": "^2.3.4",
     "typescript": "^3.0.1"
   }
 }

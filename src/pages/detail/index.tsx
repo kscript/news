@@ -54,11 +54,21 @@ class Detail extends Component {
   config: Config = {
     navigationBarTitleText: '新闻详情'
   }
+  async componentWillMount () {
+    Taro.showLoading({
+      title: '加载中..'
+    })
+  }
   async componentDidMount () {
     console.log(this)
     const id = this.$router.params.id
-    this.loadDetail(id)
-    this.loadComments(id)
+    await Promise.all([
+      this.loadDetail(id),
+      this.loadComments(id)
+    ])
+    setTimeout(() => {
+      Taro.hideLoading()
+    }, 0)
   }
   formatTag(type, data) {
     switch (type) {
@@ -194,7 +204,7 @@ class Detail extends Component {
     Taro.setNavigationBarTitle({
       title: detail.title
     })
-    detail.content.richText = this.formatContent(detail.content.text, detail)
+    const richText = detail.content.richText = this.formatContent(detail.content.text, detail)
     this.setState((state: anyObject) => {
       const nickName = Taro.getStorageSync('nickName')
       let userInfo = { nickName: '', avator: '' }
@@ -204,7 +214,7 @@ class Detail extends Component {
         avator = userInfo.avator
       } catch(e) {}
       return Object.assign({
-        nodes: this.createNodes(detail.content.text, detail),
+        nodes: [{type: 'HTML', data: richText}], // this.createNodes(detail.content.text, detail),
         ready: true,
         detail,
       }, 
@@ -246,13 +256,15 @@ class Detail extends Component {
               })
             }
             {
-              this.state.detail.is_sensitive ? '' :
+              this.state.detail.is_sensitive ? <View className="comments">
+                <View className="close-text">评论功能已关闭</View>
+              </View> :
               <View className="comments">
                 <View className="hd"> 发表评论: 
                   {
                     this.state.nickName
                     ? <View className="nick-name is-login">你好,<OpenData type="userNickName"></OpenData></View>
-                    : <Button  className="nick-name" plain openType="getUserInfo" size="mini" onGetUserInfo={this.login}>请登录</Button>
+                    : <Button  className="nick-name" plain openType="getUserInfo" size="mini" onGetUserInfo={this.login}>请先授权</Button>
                   }
                 </View>
                 <View className="bd">

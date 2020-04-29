@@ -1,11 +1,66 @@
-.detail {
-  box-sizing: border-box;
-  line-height: 1.42857;
+.profile {
   padding: 20px;
-  .title {
-    font-size: 36px;
+  overflow: hidden;
+  .left {
+    float: left;
   }
-  .content {
+  .right {
+    float: right;
+  }
+  .nick-name {
+    color: #f40;
+    border: 0;
+    padding: 0;
+    float: right;
+    font-size: 30px;
+    line-height: 30px;
+    margin-right: 10px;
+    margin-top: 30px;
+    &.is-login{
+      color: #67C23A;
+      padding-top: 12px;
+      open-data {
+        color: #f40;
+      }
+    }
+  }
+  .photo {
+    width: 100px;
+    height: 100px;
+    border: 1px solid #eee;
+    border-radius: 50%;
+    margin-right: 20px;
+    overflow: hidden;
+    open-data {
+      width: 100px;
+      height: 100px;
+      display: block;
+    }
+  }
+  .username {
+    color: #333;
+    font-size: 40px;
+  }
+  .from {
+    color: #888;
     font-size: 32px;
+    open-data {
+      margin-right: 6px;
+    }
+  }
+}
+.list {
+  padding: 20px;
+  .item {
+    overflow: hidden;
+    padding: 28px 12px;
+    font-size: 36px;
+    border-bottom: 1px solid #f5f5f5;
+    .icon {
+      color: #999;
+      font-size: 34px;
+      margin-top: 10px;
+      float: right;
+    }
   }
 }
