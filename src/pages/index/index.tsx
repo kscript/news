@@ -103,6 +103,9 @@ class Index extends Component {
   }
   async loadNews() {
     if (this.state.complete) return
+    Taro.showLoading({
+      title: '加载中..'
+    })
     const res = await this.props.newsList(this.state.page)
     this.setState((state: anyObject) => {
       const focus = state.focus.length ? state.focus : res.focus_news
@@ -122,6 +125,8 @@ class Index extends Component {
         news,
         complete
       }
+    }, () => {
+      Taro.hideLoading()
     })
   }
 

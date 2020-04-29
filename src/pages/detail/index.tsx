@@ -262,7 +262,7 @@ class Detail extends Component {
     })
   }
   async onScrollToLower() {
-    if (!$data.isLoading) {
+    if (!$data.isLoading && !this.state.complete) {
       this.setState(() => {
         return {
           loading: '评论加载中..'
