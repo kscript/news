@@ -30,8 +30,12 @@ interface Detail {
   props: IProps;
 }
 const $data = {
-  comment: '',
-  isLoading: false
+  comments: {
+    id: '',
+    count: 0,
+    comment: '',
+    loading: false
+  }
 }
 
 @connect(({ http }) => ({
@@ -161,8 +165,8 @@ class Detail extends Component {
     })
   }
   async sendComment() {
-    if (!this.state.nickName || !this.state.comment || $data.comment === this.state.comment) return
-    $data.comment = this.state.comment
+    if (!this.state.nickName || !this.state.comment || $data.comments.comment === this.state.comment) return
+    $data.comments.comment = this.state.comment
     const data = {
       id: this.$router.params.id,
       text: this.state.comment,
@@ -174,11 +178,12 @@ class Detail extends Component {
       data: {
         fname: 'add',
         name: 'comments',
-        marge: ['openId', 'type', 'time'],
+        merge: ['openId', 'type', 'time'],
         data
       }
     }) as anyObject
-    if (result.errMsg === 'collection.add:ok') {
+    if (result && result.errMsg === 'collection.add:ok') {
+      $data.comments.count++
       Taro.showToast({
         icon: 'success',
         title: '发表评论成功',
@@ -194,7 +199,7 @@ class Detail extends Component {
     return result
   }
   async loadComments(id, pageno = this.state.pageno) {
-    $data.isLoading = true
+    $data.comments.loading = true
     const { result } = await Taro.cloud.callFunction({
       name: 'core',
       data: {
@@ -210,7 +215,11 @@ class Detail extends Component {
     }) as anyObject
     this.setState((state: anyObject) => {
       let comments = state.comments.concat(result.data)
-      let complete =  comments.length % this.state.limit !== 0
+      let complete =  (comments.length - $data.comments.count) % this.state.limit !== 0
+      let last = result.data.slice(-1)[0]
+      if (last) {
+        $data.comments.id = last.id
+      }
       return {
         loading: complete ? '评论已全部加载' : '',
         complete,
@@ -218,7 +227,7 @@ class Detail extends Component {
         comments: comments
       }
     }, () => {
-      $data.isLoading = false
+      $data.comments.loading = false
     })
     return result
   }
@@ -262,7 +271,7 @@ class Detail extends Component {
     })
   }
   async onScrollToLower() {
-    if (!$data.isLoading && !this.state.complete) {
+    if (!$data.comments.loading && !this.state.complete) {
       this.setState(() => {
         return {
           loading: '评论加载中..'
