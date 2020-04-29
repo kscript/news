@@ -1,6 +1,6 @@
 import { ComponentClass } from 'react'
 import Taro, { Component, Config } from '@tarojs/taro'
-import { View, Text, Textarea, Button, Image, Icon, RichText, Video, OpenData } from '@tarojs/components'
+import { View, Text, Textarea, Button, Image, Icon, RichText, Video, OpenData, ScrollView } from '@tarojs/components'
 import { connect } from '@tarojs/redux'
 
 import { newsDetail } from '../../actions/http'
@@ -43,6 +43,10 @@ const $data = {
 class Detail extends Component {
   state: anyObject = {
     ready: false,
+    complete: true,
+    pageno: 1,
+    loading: '',
+    limit: 10,
     nodes: [],
     comments: [],
     comment: '',
@@ -174,6 +178,11 @@ class Detail extends Component {
       }
     }) as anyObject
     if (result.errMsg === 'collection.add:ok') {
+      Taro.showToast({
+        icon: 'success',
+        title: '发表评论成功',
+        duration: 1500
+      })
       this.setState((state: anyObject) => {
         let comments = [Object.assign(data, result)].concat(state.comments)
         return {
@@ -183,8 +192,7 @@ class Detail extends Component {
     }
     return result
   }
-  async loadComments(id, pageno = 1) {
-    pageno--
+  async loadComments(id, pageno = this.state.pageno) {
     const { result } = await Taro.cloud.callFunction({
       name: 'core',
       data: {
@@ -194,13 +202,18 @@ class Detail extends Component {
           id
         },
         orderBy: ['time', 'desc'],
-        skip: pageno * 10,
-        limit: 10
+        skip: (pageno - 1) * this.state.limit,
+        limit: this.state.limit
       }
     }) as anyObject
-    this.setState((state) => {
+    this.setState((state: anyObject) => {
+      let comments = state.comments.concat(result.data)
+      let complete =  comments.length % this.state.limit !== 0
       return {
-        comments: result.data
+        loading: complete ? '评论已全部加载' : '',
+        complete,
+        pageno: pageno + 1,
+        comments: comments
       }
     })
     return result
@@ -244,9 +257,26 @@ class Detail extends Component {
       title: '视频加载出错'
     })
   }
+  async onScrollToLower() {
+    if (!this.state.complete) {
+      this.setState(() => {
+        return {
+          loading: '评论加载中..'
+        }
+      })
+      setTimeout(async () => {
+        await this.loadComments(this.$router.params.id)
+      })
+    }
+  }
   render () {
     return (
       <View className='detail'>
+        <ScrollView
+          className="scroll-view"
+          scrollY
+          scrollWithAnimation
+          onScrollToLower={this.onScrollToLower}>
         {
           this.state.ready ? 
           <View className="article">
@@ -310,12 +340,14 @@ class Detail extends Component {
                       </View>
                     })
                   }
+                  <View className="loading-text">{this.state.loading}</View>
                 </View>
               </View>
             }
           </View>
           : ''
         }
+        </ScrollView>
       </View>
     )
   }
