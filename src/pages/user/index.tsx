@@ -58,21 +58,24 @@ class User extends Component {
   componentDidMount () {
     console.log(this)
   }
-  openSetting() {
-    Taro.openSetting({
-      success: function (res) {
-        console.log(res.authSetting)
-        if (!res.authSetting['scope.userInfo']) {
-          this.cancelAuth()
-        }
+  async openSetting() {
+    const old = await Taro.getSetting()
+    const auth = await Taro.openSetting()
+    if (old.authSetting['scope.userInfo'] !== auth.authSetting['scope.userInfo']) {
+      if (auth.authSetting['scope.userInfo']) {
+        const detail = await Taro.getUserInfo()
+        await this.login({ detail })
+      } else {
+        this.cancelAuth()
       }
-    })
+    }
   }
   async openAbout () {
-    const res = await Taro.showModal({
+    await Taro.showModal({
       title: '关于当前小程序',
       content: '这是一个基于Taro2.0开发的, 用于新闻阅读/评论的小程序, 新闻源来自于看点快报(https://kuaibao.qq.com)',
       confirmText: '知道了',
+      cancelText: '取消操作',
       showCancel: false
     })
   }

@@ -51,7 +51,10 @@ class Index extends Component {
     complete: false,
     page: 0,
     focus: [],
-    news: []
+    news: [],
+    loading: {
+      text: ''
+    }
   }
     /**
    * 指定config的类型声明为: Taro.Config
@@ -86,6 +89,16 @@ class Index extends Component {
   }
   async onScrollToLower() {
     console.log('onScrollToLower')
+    if (!this.state.complete) {
+      this.setState((state: anyObject) => {
+        const loading = state.loading
+        return {
+          loading: Object.assign({}, loading, {
+            text: '加载中..'
+          })
+        }
+      })
+    }
     await this.loadNews()
   }
   async loadNews() {
@@ -95,11 +108,15 @@ class Index extends Component {
       const focus = state.focus.length ? state.focus : res.focus_news
       const page = res.page
       const news = state.news.concat(res.newslist)
+      const loading = state.loading
       let complete = state.complete
       if (page !== 0 && !res.page) {
         complete = true
       }
       return {
+        loading: Object.assign({}, loading, {
+          text: ''
+        }),
         page: page || state.page,
         focus,
         news,
@@ -149,6 +166,7 @@ class Index extends Component {
               )
             }
           </View>
+          <View className="loading-text">{this.state.loading.text}</View>
         </ScrollView>
         {
           this.state.complete ? <View className="complete-tip text-center">没有了</View> : ''

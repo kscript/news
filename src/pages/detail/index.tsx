@@ -62,27 +62,30 @@ class Detail extends Component {
   async componentDidMount () {
     console.log(this)
     const id = this.$router.params.id
-    await Promise.all([
-      this.loadDetail(id),
-      this.loadComments(id)
-    ])
-    setTimeout(() => {
-      Taro.hideLoading()
-    }, 0)
+    await this.loadDetail(id),
+    this.loadComments(id)
   }
   formatTag(type, data) {
     switch (type) {
       case 'LINK':
         return '<div>' + data.title + '</div><span style="font-size: 12px;color: blue">' + data.abstract + '</span>'
       case 'LIST':
-        return '<ol style="margin: 0;padding: 0;">' + (data || []).map(item => `<li style="margin: 0;list-style: disc;">${item.desc}</li>`) + '</ol>';
+        return '<ol style="margin: 0;padding: 0;">' + (data || []).map(item => `<li style="margin-left: 20px;list-style: disc;">${item.desc}</li>`) + '</ol>';
       case 'IMG': 
         return `<img src="${data.origUrl}" alt="${data.desc}" style="max-width: 100%;">`
-      case 'H2': 
-      case '/H2': 
-        return ' '
+      case 'TIMELINE': return '<ol style="margin: 0;padding: 0;">'
+      case '/TIMELINE': return '</ol>'
+      case 'TIME': return '<li style="margin-left: 20px;list-style: disc;">'
+      case '/TIME': return '</li>'
+      case 'H1': return '<h1>' 
+      case 'H1': return '<h1>' 
+      case '/H1': return '</h1>' 
+      case 'H2': return '<h2>' 
+      case '/H2': return '</h2>'
+      case 'EVENT':
+      case '/EVENT':
       case 'VIDEO': 
-        return ' ' // `<video src="${data.playurl}" poster="${data.img}" style="max-width: 100%;">`
+        return ' '
       default:
         return type
     }
@@ -104,24 +107,27 @@ class Detail extends Component {
     })
   }
   createNodes(content = '', detail: anyObject = {}) {
-    const tags = content.match(/<P><\!--(IMG|VIDEO)_\d+--><\/P>/g) || []
-    const contents = content.split(/(?:<P><\!--(?:IMG|VIDEO)_\d+--><\/P>)/)
+    if(/^<\!--(.*?)-->$/.test(content)) {
+      content = '<P>' + content + '</P>'
+    }
+    const tags = content.match(/<P><\!--(.*?)--><\/P>/g) || []
+    const contents = content.split(/(?:<P><\!--(?:.*?)--><\/P>)/)
     const nodes: any[] = []
-    let imgIndex = 0
-    let videoIndex = 0
     contents.map((item, index) => {
       nodes.push({
         type: 'HTML',
         key: Math.floor(Math.random() * 1e8).toString(36),
         data: this.formatContent(item, detail)
       })
-      const type = ((tags[index]||'').match(/--(.*?)_/)||{}) [1]|| ''
-      const data = (detail.attribute || {})[type === 'IMG' ? 'IMG_' + imgIndex++ : 'VIDEO_' + videoIndex++]
-      data && nodes.push({
-        type,
-        key: Math.floor(Math.random() * 1e8).toString(36),
-        data
-      })
+      const type = ((tags[index]||'').match(/--(.*?)--/)||{}) [1]|| ''
+      if (type) {
+        let data = (detail.attribute || {})[type] || {}
+        data && nodes.push({
+          type: type.split('_')[0],
+          key: Math.floor(Math.random() * 1e8).toString(36),
+          data
+        })
+      }
     })
     return nodes
   }
@@ -214,13 +220,28 @@ class Detail extends Component {
         avator = userInfo.avator
       } catch(e) {}
       return Object.assign({
-        nodes: [{type: 'HTML', data: richText}], // this.createNodes(detail.content.text, detail),
+        nodes: this.createNodes(detail.content.text, detail), // [{type: 'HTML', data: richText}],
         ready: true,
         detail,
       }, 
       nickName ? { nickName } : {}, 
       avator ? { avator } : {}, 
       userInfo.nickName ? { userInfo } : {})
+    }, () => {
+      setTimeout(() => {
+        Taro.hideLoading()
+      }, 0)
+    })
+  }
+  openLink(id) {
+    Taro.navigateTo({
+      url: '/pages/detail/index?id=' + id
+    })
+  }
+  videoError() {
+    Taro.showToast({
+      icon: 'none',
+      title: '视频加载出错'
     })
   }
   render () {
@@ -242,17 +263,26 @@ class Detail extends Component {
                   return <RichText key={item.key} className="content" nodes={item.data}></RichText>
                 } else if(item.type === 'IMG') {
                   return <Image src={item.data.origUrl} />
+                } else if (item.type === 'VIDEO') {
+                  return <Video
+                    key={item.key}
+                    src={item.data.playurl}
+                    controls={true}
+                    autoplay={false}
+                    poster={item.data.img}
+                    initialTime={0}
+                    loop={false}
+                    muted={false}
+                    onError={this.videoError}
+                  ></Video>
+                } else if (item.type === 'LINK') {
+                  return <View className="link" onClick={this.openLink.bind(this, item.data.id)}>
+                    <View className="title">{item.data.title}</View>
+                    <View className="desc">{item.data.abstract}</View>
+                  </View>
+                } else {
+                  return JSON.stringify(item)
                 }
-                return <Video
-                  key={item.key}
-                  src={item.data.playurl}
-                  controls={true}
-                  autoplay={false}
-                  poster={item.data.img}
-                  initialTime={0}
-                  loop={false}
-                  muted={false}
-                ></Video>
               })
             }
             {

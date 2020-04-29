@@ -2,6 +2,8 @@
   box-sizing: border-box;
   line-height: 1.42857;
   padding: 20px;
+}
+.article {
   .title {
     font-size: 36px;
   }
@@ -33,50 +35,60 @@
   video{
     width: 100%;
   }
-  .comments {
-    margin-top: 40px;
-    border-top: 1px solid #eee;
-    padding-top: 40px;
-    padding-bottom: 20px;
-    .close-text {
+  .link {
+    .title {
+      color: blue;
       font-size: 30px;
-      color: #666;
     }
-    .nick-name {
-      color: #f40;
-      border: 0;
-      padding: 0;
-      float: right;
-      font-size: 30px;
-      line-height: 30px;
-      margin-right: 10px;
-      margin-top: 10px;
-      &.is-login{
-        color: #333;
-        padding-top: 12px;
-        open-data {
-          color: #f40;
-        }
+    .desc{
+      color: #888;
+      font-size: 24px;
+    }
+  }
+}
+.comments {
+  margin-top: 40px;
+  border-top: 1px solid #eee;
+  padding-top: 40px;
+  padding-bottom: 20px;
+  .close-text {
+    font-size: 30px;
+    color: #666;
+  }
+  .nick-name {
+    color: #f40;
+    border: 0;
+    padding: 0;
+    float: right;
+    font-size: 30px;
+    line-height: 30px;
+    margin-right: 10px;
+    margin-top: 10px;
+    &.is-login{
+      color: #333;
+      padding-top: 12px;
+      open-data {
+        color: #f40;
       }
     }
-    textarea {
-      margin: 16px 0;
-      width: 100%;
-      padding: 12px 12px;
-      box-sizing: border-box;
-      border: 1px solid #f2f2f2;
+  }
+  textarea {
+    margin: 16px 0;
+    width: 100%;
+    padding: 12px 12px;
+    box-sizing: border-box;
+    border: 1px solid #f2f2f2;
+  }
+  .ft {
+    padding: 20px 0;
+  }
+  .comment-item {
+    padding: 10px 0;
+    .info {
+      font-size: 28px;
     }
-    .ft {
-      padding: 20px 0;
-    }
-    .comment-item {
-      padding: 10px 0;
-      .info {
-        font-size: 28px;
-      }
-      .text {
-        font-size: 28px;
-      }
+    .text {
+      font-size: 28px;
     }
   }
 }
