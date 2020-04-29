@@ -30,7 +30,8 @@ interface Detail {
   props: IProps;
 }
 const $data = {
-  comment: ''
+  comment: '',
+  isLoading: false
 }
 
 @connect(({ http }) => ({
@@ -193,6 +194,7 @@ class Detail extends Component {
     return result
   }
   async loadComments(id, pageno = this.state.pageno) {
+    $data.isLoading = true
     const { result } = await Taro.cloud.callFunction({
       name: 'core',
       data: {
@@ -215,6 +217,8 @@ class Detail extends Component {
         pageno: pageno + 1,
         comments: comments
       }
+    }, () => {
+      $data.isLoading = false
     })
     return result
   }
@@ -258,13 +262,12 @@ class Detail extends Component {
     })
   }
   async onScrollToLower() {
-    if (!this.state.complete) {
+    if (!$data.isLoading) {
       this.setState(() => {
         return {
           loading: '评论加载中..'
         }
-      })
-      setTimeout(async () => {
+      }, async () => {
         await this.loadComments(this.$router.params.id)
       })
     }
