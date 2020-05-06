@@ -19,18 +19,20 @@ const provide = (data = {}) => {
   const time = createTime()
   return Object.assign({
     time,
+    date: +new Date,
     type: 1
   }, data)
 }
 exports.main = async (option, { cloud, db, collection }) => {
   let { name, data, merge, userInfo: { openId } } = option
   const result = await collection.add({
-    data: Object.assign({}, mergeData(merge, provide({
-      openId
+    data: Object.assign({
+    }, mergeData(merge, provide({
+      openId,
     })), data)
   })
   Object.assign(result, mergeData(merge, provide({
-    openId
+    openId,
   })))
   return result
 }

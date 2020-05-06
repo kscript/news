@@ -32,12 +32,26 @@ interface Detail {
 const $data = {
   comments: {
     id: '',
-    count: 0,
+    date: 0,
     comment: '',
+    limit: 10,
+    complete: true,
     loading: false
   }
 }
-
+const resetData = (data) => {
+  return Object.assign(data, {
+    comments: {
+      id: '',
+      date: 0,
+      comment: '',
+      limit: 10,
+      complete: true,
+      loading: false
+    }
+  })
+}
+console.log($data)
 @connect(({ http }) => ({
   http
 }), (dispatch) => ({
@@ -48,10 +62,8 @@ const $data = {
 class Detail extends Component {
   state: anyObject = {
     ready: false,
-    complete: true,
     pageno: 1,
     loading: '',
-    limit: 10,
     nodes: [],
     comments: [],
     comment: '',
@@ -64,6 +76,7 @@ class Detail extends Component {
     navigationBarTitleText: '新闻详情'
   }
   async componentWillMount () {
+    resetData($data)
     Taro.showLoading({
       title: '加载中..'
     })
@@ -178,12 +191,11 @@ class Detail extends Component {
       data: {
         fname: 'add',
         name: 'comments',
-        merge: ['openId', 'type', 'time'],
+        merge: ['openId', 'type', 'time', 'date'],
         data
       }
     }) as anyObject
     if (result && result.errMsg === 'collection.add:ok') {
-      $data.comments.count++
       Taro.showToast({
         icon: 'success',
         title: '发表评论成功',
@@ -192,6 +204,7 @@ class Detail extends Component {
       this.setState((state: anyObject) => {
         let comments = [Object.assign(data, result)].concat(state.comments)
         return {
+          comment: '',
           comments
         }
       })
@@ -205,24 +218,27 @@ class Detail extends Component {
       data: {
         fname: 'get',
         name: 'comments',
-        where: {
+        where: Object.assign({
           id
-        },
-        orderBy: ['time', 'desc'],
-        skip: (pageno - 1) * this.state.limit,
-        limit: this.state.limit
+        },$data.comments.date ? {
+          date: ['lt', $data.comments.date]
+        } : {}),
+        orderBy: ['date', 'desc'],
+        // skip: (pageno - 1) * $data.comments.limit,
+        limit: $data.comments.limit
       }
     }) as anyObject
     this.setState((state: anyObject) => {
       let comments = state.comments.concat(result.data)
-      let complete =  (comments.length - $data.comments.count) % this.state.limit !== 0
+      let complete = result.data.length !== $data.comments.limit
       let last = result.data.slice(-1)[0]
       if (last) {
         $data.comments.id = last.id
+        $data.comments.date = last.date
       }
+      $data.comments.complete = complete
       return {
         loading: complete ? '评论已全部加载' : '',
-        complete,
         pageno: pageno + 1,
         comments: comments
       }
@@ -271,7 +287,7 @@ class Detail extends Component {
     })
   }
   async onScrollToLower() {
-    if (!$data.comments.loading && !this.state.complete) {
+    if (!$data.comments.loading && !$data.comments.complete) {
       this.setState(() => {
         return {
           loading: '评论加载中..'
