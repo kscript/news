@@ -238,7 +238,7 @@ class Detail extends Component {
       }
       $data.comments.complete = complete
       return {
-        loading: complete ? '评论已全部加载' : '',
+        loading: complete ? comments.length ? '评论已全部加载' : '暂无评论' : '',
         pageno: pageno + 1,
         comments: comments
       }
@@ -363,8 +363,10 @@ class Detail extends Component {
                   {
                     this.state.comments.map(item => {
                       return <View className="comment-item" key={item._id}>
-                        <View className="info">{item.nickName} {item.time}</View>
-                        <View className="text">{item.text}</View>
+                        <View className="hd">
+                          <Text className="name">{item.nickName}</Text> <Text className="time">{item.time}</Text>
+                        </View>
+                        <View className="bd">{item.text}</View>
                       </View>
                     })
                   }

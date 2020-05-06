@@ -75,7 +75,6 @@ class User extends Component {
       title: '关于当前小程序',
       content: '这是一个基于Taro2.0开发的, 用于新闻阅读/评论的小程序, 新闻源来自于看点快报(https://kuaibao.qq.com)',
       confirmText: '知道了',
-      cancelText: '取消操作',
       showCancel: false
     })
   }
@@ -100,7 +99,9 @@ class User extends Component {
     const res = await Taro.showModal({
       title: '说明',
       content: '取消授权后您的信息还会被保留显示, 但不能再发表评论',
-      confirmText: '知道了'
+      cancelText: '暂不取消',
+      showCancel: true,
+      confirmText: '取消'
     })
     if (res.confirm) {
       this.cancelAuth()
