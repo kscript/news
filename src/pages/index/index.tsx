@@ -50,6 +50,7 @@ class Index extends Component {
   state: anyObject = {
     complete: false,
     page: 0,
+    list: [],
     focus: [],
     news: [],
     loading: {
@@ -108,9 +109,9 @@ class Index extends Component {
     // })
     const res = await this.props.newsList(this.state.page)
     this.setState((state: anyObject) => {
-      const focus = state.focus.length ? state.focus : res.focus_news
+      // const focus = state.focus.length ? state.focus : res.focus_news
+      // const news = state.news.concat(res.newslist)
       const page = res.page
-      const news = state.news.concat(res.newslist)
       const loading = state.loading
       let complete = state.complete
       if (page !== 0 && !res.page) {
@@ -121,8 +122,9 @@ class Index extends Component {
           text: ''
         }),
         page: page || state.page,
-        focus,
-        news,
+        // focus,
+        // news,
+        list: state.list.concat(res),
         complete
       }
     }, () => {
@@ -139,38 +141,51 @@ class Index extends Component {
           scrollWithAnimation
           onScrollToLower={this.onScrollToLower}
           >
-          <Swiper
-            className='top-swiper'
-            indicatorColor='#999'
-            indicatorActiveColor='#333'
-            circular
-            autoplay>
-            {this.state.focus.map(item => 
-              <SwiperItem key={item.id} onClick={this.gotoDetail.bind(this, item.id, item.articletype)}>
-                <Image className="thumb" src={item.thumbnails[0]}></Image>
-                <View className="title ellipsis">{item.title}</View>
-              </SwiperItem>
-            )
-          }
-          </Swiper>
-          <View 
-            className="news-list">
-            {
-              this.state.news.map(item => 
-                <View className="news-item" key={item.id} onClick={this.gotoDetail.bind(this, item.id, item.articletype)}>
-                  <View className="title ellipsis">{item.title}</View>
-                  <View className="desc">{item.abstract}</View>
-                  <View className={"thumb-list" + (item.thumbnails.length > 1 ? " is-multi" : "")}>
+          {
+            this.state.list.map(data => {
+              return <View key={data.page}>
+                {
+                  data.focus_news ? <Swiper
+                    className='top-swiper'
+                    indicatorColor='#999'
+                    indicatorActiveColor='#333'
+                    circular
+                    autoplay>
                     {
-                      item.thumbnails.slice(0, 3).map(thumb => 
-                        <Image key={thumb} className="thumb" src={thumb}></Image>
+                      data.focus_news.map(item => 
+                        <SwiperItem key={item.id} onClick={this.gotoDetail.bind(this, item.id, item.articletype)}>
+                          <Image className="thumb" src={item.thumbnails[0]}></Image>
+                          <View className="title ellipsis">{item.title}</View>
+                        </SwiperItem>
+                      )
+                    }
+                  </Swiper> : ''
+                }
+                {
+                  data.newslist ? 
+                  <View 
+                    className="news-list">
+                    {
+                      data.newslist.map(item => 
+                        <View className="news-item" key={item.id} onClick={this.gotoDetail.bind(this, item.id, item.articletype)}>
+                          <View className="title ellipsis">{item.title}</View>
+                          <View className="desc">{item.abstract}</View>
+                          <View className={"thumb-list" + (item.thumbnails.length > 1 ? " is-multi" : "")}>
+                            {
+                              item.thumbnails.slice(0, 3).map(thumb => 
+                                <Image key={thumb} className="thumb" src={thumb}></Image>
+                              )
+                            }
+                          </View>
+                        </View>
                       )
                     }
                   </View>
-                </View>
-              )
-            }
-          </View>
+                  : ''
+                }
+              </View>
+            })
+          }
           <View className="loading-text">{this.state.loading.text}</View>
         </ScrollView>
         {

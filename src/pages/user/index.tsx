@@ -81,6 +81,14 @@ class User extends Component {
   
   async login({ detail }) {
     const { userInfo } = detail
+    await Taro.cloud.callFunction({
+      name: 'core',
+      data: {
+        name: 'users',
+        fname: 'update',
+        data: userInfo
+      }
+    })
     await Taro.setStorage({
       key: 'userInfo',
       data: JSON.stringify(userInfo)

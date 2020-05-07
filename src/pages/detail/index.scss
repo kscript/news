@@ -11,7 +11,7 @@
     font-size: 36px;
   }
   .info {
-    padding: 4px 0;
+    padding: 10px 0;
     font-size: 26px;
     color: #666;
     .name {
@@ -59,60 +59,77 @@
     text-align: center;
     color: #666;
   }
-  .nick-name {
-    color: #f40;
-    border: 0;
-    padding: 0;
-    float: right;
-    font-size: 30px;
-    line-height: 30px;
-    margin-right: 10px;
-    margin-top: 10px;
-    &.is-login{
-      color: #333;
-      padding-top: 12px;
-      open-data {
-        color: #f40;
+  .edit {
+    .nick-name {
+      color: #f40;
+      border: 0;
+      padding: 0;
+      float: right;
+      font-size: 30px;
+      line-height: 30px;
+      margin-right: 10px;
+      margin-top: 10px;
+      &.is-login{
+        color: #333;
+        padding-top: 12px;
+        open-data {
+          color: #f40;
+        }
+      }
+    }
+    textarea {
+      margin: 16px 0;
+      width: 100%;
+      padding: 12px 12px;
+      box-sizing: border-box;
+      border: 1px solid #f2f2f2;
+    }
+  }
+  .list {
+    padding: 30px 0;
+    .comment-item {
+      padding: 10px 0;
+      .icon {
+        font-size: 60px;
+        color: #fff;
+        background: #aaa;
+        display: inline;
+        border-radius: 10px;
+        margin-right: 16px;
+      }
+      .avator {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        margin-right: 16px;
+        margin-top: 10px;
+      }
+      .hd {
+        font-size: 28px;
+        overflow: hidden;
+        padding-top: 8px;
+        .name {
+          color: #f40;
+          margin-right: 10px;
+        }
+        .time {
+          color: #999;
+          // float: right;
+        }
+      }
+      .bd {
+        color: #555;
+        padding: 10px 0;
+        font-size: 28px;
+        border-bottom: 1px solid #fdfdfd;
+        margin-bottom: 10px;
       }
     }
   }
-  textarea {
-    margin: 16px 0;
-    width: 100%;
-    padding: 12px 12px;
-    box-sizing: border-box;
-    border: 1px solid #f2f2f2;
-  }
-  .ft {
-    padding: 30px 0;
-    .loading-text {
-      text-align: center;
-      font-size: 28px;
-      color: #888;
-      padding: 20px 0;
-    }
-  }
-}
-
-.comment-item {
-  padding: 10px 0;
-  .hd {
+  .loading-text {
+    text-align: center;
     font-size: 28px;
-    overflow: hidden;
-    .name {
-      color: #f40;
-      margin-right: 10px;
-    }
-    .time {
-      color: #999;
-      // float: right;
-    }
-  }
-  .bd {
-    color: #555;
-    padding: 10px 0;
-    font-size: 28px;
-    border-bottom: 1px solid #fdfdfd;
-    margin-bottom: 10px;
+    color: #888;
+    padding: 20px 0;
   }
 }

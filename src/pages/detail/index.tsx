@@ -162,6 +162,14 @@ class Detail extends Component {
   }
   async login({ detail }) {
     const { userInfo } = detail
+    await Taro.cloud.callFunction({
+      name: 'core',
+      data: {
+        name: 'users',
+        fname: 'update',
+        data: userInfo
+      }
+    })
     await Taro.setStorage({
       key: 'userInfo',
       data: JSON.stringify(userInfo)
@@ -348,30 +356,42 @@ class Detail extends Component {
                 <View className="close-text">评论功能已关闭</View>
               </View> :
               <View className="comments">
-                <View className="hd"> 发表评论: 
-                  {
-                    this.state.nickName
-                    ? <View className="nick-name is-login">你好,<OpenData type="userNickName"></OpenData></View>
-                    : <Button  className="nick-name" plain openType="getUserInfo" size="mini" onGetUserInfo={this.login}>请先授权</Button>
-                  }
+                <View className="edit">
+                  <View className="hd"> 发表评论: 
+                    {
+                      this.state.nickName
+                      ? <View className="nick-name is-login">你好,<OpenData type="userNickName"></OpenData></View>
+                      : <Button  className="nick-name" plain openType="getUserInfo" size="mini" onGetUserInfo={this.login}>请先授权</Button>
+                    }
+                  </View>
+                  <View className="bd">
+                    <Textarea showConfirmBar={false} onInput={this.onInput} value={this.state.comment}></Textarea>
+                    <Button onClick={this.sendComment}>发表</Button>
+                  </View>
                 </View>
-                <View className="bd">
-                  <Textarea onInput={this.onInput} value={this.state.comment}></Textarea>
-                  <Button onClick={this.sendComment}>发表</Button>
-                </View>
-                <View className="ft">
+                <View className="list">
                   {
                     this.state.comments.map(item => {
-                      return <View className="comment-item" key={item._id}>
-                        <View className="hd">
-                          <Text className="name">{item.nickName}</Text> <Text className="time">{item.time}</Text>
+                      return <View className="comment-item clearfix" key={item._id}>
+                        <View className="left">
+                        
+                          {
+                            item.avator ? <Image className="avator" src={item.avator}/> : 
+                            // <Image className="avator" src="http://inews.gtimg.com/newsapp_ls/0/75155377_100100/0"/>
+                            <View className="icon icon-avator"></View>
+                          }
                         </View>
-                        <View className="bd">{item.text}</View>
+                        <View className="left">
+                          <View className="hd">
+                            <Text className="name">{item.nickName}</Text> <Text className="time">{item.time}</Text>
+                          </View>
+                          <View className="bd">{item.text}</View>
+                        </View>
                       </View>
                     })
                   }
-                  <View className="loading-text">{this.state.loading}</View>
                 </View>
+                <View className="loading-text">{this.state.loading}</View>
               </View>
             }
           </View>
