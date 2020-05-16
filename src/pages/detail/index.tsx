@@ -213,6 +213,7 @@ class Detail extends Component {
         let comments = [Object.assign(data, result)].concat(state.comments)
         return {
           comment: '',
+          loading: '',
           comments
         }
       })
